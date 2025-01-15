@@ -1,0 +1,43 @@
+#!/bin/bash
+
+if [[ $EUID -ne 0 ]]; then
+    echo "'dxdp-db-update' must be run as root."
+    exit 1
+fi
+
+echo "Preparing"
+
+UPDATE_PY_PATH="/lib/dxdp/update_db.py"
+VENV_DIR="/lib/dxdp/tmp/.venv"
+
+if [ ! -d "$VENV_DIR" ]; then
+    python -m venv "$VENV_DIR" > /dev/null 2>&1
+fi
+
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Venv error - please report."
+    exit 1
+fi
+
+source "$VENV_DIR/bin/activate"
+
+if ! pip show pandas > /dev/null 2>&1; then
+    pip install pandas > /dev/null 2>&1
+fi
+
+if ! pip show pandas > /dev/null 2>&1; then
+    echo "dep error - please report."
+    exit 1
+fi
+
+if ! pip show requests > /dev/null 2>&1; then
+    pip install requests > /dev/null 2>&1
+fi
+
+if ! pip show requests > /dev/null 2>&1; then
+    echo "dep error - please report."
+fi
+
+echo "Preperation done...starting update"
+python3 $UPDATE_PY_PATH
+rm -r -f "$VENV_DIR"

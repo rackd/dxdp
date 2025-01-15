@@ -1,0 +1,142 @@
+#include "dxdp/bpf_handler.h"
+
+const char COND_TEMPLATE_FIRST_IPV4[] =
+"        if(is_ipv4_in_any_range(%s, bpf_ntohl(ip->saddr), %s, %s) %s= 1) {\n"
+"           return XDP_DROP;\n"
+"        }\n";
+
+const char COND_TEMPLATE_ELSE_IPV4[] =
+"        else if(is_ipv4_in_any_range(%s, bpf_ntohl(ip->saddr), %s, %s) %s= 1) {\n"
+"           return XDP_DROP;\n"
+"        }\n";
+
+const char COND_TEMPLATE_FIRST_IPV6[] =
+"        if(is_ipv6_in_any_range(%s, (__u8 *) &ip6->saddr, %s, %s) %s= 1) {\n"
+"           return XDP_DROP;\n"
+"        }\n";
+
+const char COND_TEMPLATE_ELSE_IPV6[] =
+"        else if(is_ipv6_in_any_range(%s, (__u8 *) &ip6->saddr, %s, %s) %s= 1) {\n"
+"           return XDP_DROP;\n"
+"        }\n";
+
+// IF YOU CHANGE THIS, READJUST THE ARRAY SIZE IN HEADER FILE
+const char EEBPF_CODE_TEMPLATE_START[2284] =
+"#include <linux/bpf.h>\n"
+"#include <linux/if_ether.h>\n"
+"#include <linux/ip.h>\n"
+"#include <linux/ipv6.h>\n"
+"#include <bpf/bpf_helpers.h>\n"
+"#include <bpf/bpf_endian.h>\n"
+"\n"
+"typedef struct uint32_serialized_node {\n"
+"    __u32 low;\n"
+"    __u32 high;\n"
+"    int leftIndex;\n"
+"    int rightIndex;\n"
+"    int parentIndex;\n"
+"    int color;\n"
+"} uint32_serialized_node;\n"
+"\n"
+"typedef struct uint128_serialized_node {\n"
+"    __u8 low[16];\n"
+"    __u8 high[16];\n"
+"    int leftIndex;\n"
+"    int rightIndex;\n"
+"    int parentIndex;\n"
+"    int color; \n"
+"} uint128_serialized_node;\n"
+"\n"
+"static inline int is_ipv4_in_any_range(const uint32_serialized_node tree[], unsigned int check, unsigned int max_layers, unsigned int tree_size) {\n"
+"    int currentIndex = 0;\n"
+"    #pragma clang loop unroll(disable)\n"
+"    for (int i = 0; i < max_layers; i++) {\n"
+"        if (currentIndex >= 0 && currentIndex < tree_size) {\n"
+"            uint32_serialized_node node = tree[currentIndex];\n"
+"            if (check >= node.low && check <= node.high) {\n"
+"                return 1;\n"
+"            }\n"
+"\n"
+"            if (check < node.low) {\n"
+"                currentIndex = node.leftIndex;\n"
+"            } else {\n"
+"                currentIndex = node.rightIndex;\n"
+"            }\n"
+"        }\n"
+"    }\n"
+"\n"
+"    return 0;\n"
+"}\n"
+"\n"
+"static inline int memcmp128(const __u8 a[16], const __u8 b[16]) {\n"
+"    for (int i = 0; i < 16; i++) {\n"
+"        __u8 byte_a = a[i];\n"
+"        __u8 byte_b = b[i];\n"
+"\n"
+"        if (byte_a < byte_b) {\n"
+"            return -1;\n"
+"        } else if (byte_a > byte_b) {\n"
+"            return 1;\n"
+"        }\n"
+"    }\n"
+"    return 0;\n"
+"}\n"
+"\n"
+"static inline int is_ipv6_in_any_range(const uint128_serialized_node tree[], __u8 check[16], unsigned int max_layers, unsigned int tree_size) {\n"
+"    int currentIndex = 0;\n"
+"    #pragma clang loop unroll(disable)\n"
+"    for (int i = 0; i < max_layers; i++) {\n"
+"        if (currentIndex >= 0 && currentIndex < tree_size) {\n"
+"            uint128_serialized_node node = tree[currentIndex];\n"
+"            int res1 = memcmp128(check, node.low);\n"
+"            int res2 = memcmp128(check, node.high);\n"
+"\n"
+"            if (((res1 == 1) && (res2 == -1)) || res1 == 0 || res2 == 0) {\n"
+"                return 1;\n"
+"            }\n"
+"\n"
+"            if (res1 == -1) {\n"
+"                currentIndex = node.leftIndex;\n"
+"            } else {\n"
+"                currentIndex = node.rightIndex;\n"
+"            }\n"
+"        }\n"
+"    }\n"
+"    return 0; \n"
+"}\n"
+"\n";
+
+// IF YOU CHANGE THIS, READJUST THE ARRAY SIZE IN HEADER FILE
+const char EEBPF_CT_PROG_START[414] =
+"SEC(\"xdp\")\n"
+"int xdp_prog(struct xdp_md* ctx) {\n"
+"    void* data_end = (void*)(long)ctx->data_end;\n"
+"    void* data = (void*)(long)ctx->data;\n"
+"    struct ethhdr *eth = data;\n"
+"\n"
+"    if ((void*)(eth + 1) > data_end) {\n"
+"        return XDP_DROP;\n"
+"    }\n"
+"\n"
+"    if(eth->h_proto == bpf_htons(ETH_P_IP)) {\n"
+"        struct iphdr* ip = (void *)(eth + 1);\n"
+"        if ((void *)(ip + 1) > data_end) {\n"
+"            return XDP_DROP;\n"
+"        }\n";
+
+const char EEBPF_COND_TEMPLATE_MIDDLE[201] =
+"    }  else if (eth->h_proto == bpf_htons(ETH_P_IPV6)) {\n"
+"        struct ipv6hdr* ip6 = data + sizeof(struct ethhdr);\n"
+"        if ((void*)(ip6 + 1) > data_end) {\n"
+"            return XDP_DROP;\n"
+"        }\n"
+"\n";
+
+const char EEBPF_COND_TEMPLATE_END[72] =
+"    }\n"
+"\n"
+"    return XDP_PASS;\n"
+"}\n"
+"\n"
+"char _license[] SEC(\"license\") = \"GPL\";\n";
+
