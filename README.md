@@ -39,7 +39,7 @@ delay to the network stack.
 
 ##### 2. Build and Install
 
-##### 3. Edit configuration file (see [wiki/config](https://github.com/rackd/dxdp/wiki/config-file))
+##### 3. Edit configuration file (see [wiki/config](https://github.com/rackd/dxdp/wiki/How-To-Edit-Config-File))
 
 ##### 4. Start daemon
 
