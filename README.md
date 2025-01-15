@@ -39,7 +39,7 @@ delay to the network stack.
 
 ##### 2. Build and Install
 
-##### 3. Edit configuration file (see wiki/config)
+##### 3. Edit configuration file (see [wiki/config](https://github.com/rackd/dxdp/wiki/config-file))
 
 ##### 4. Start daemon
 
@@ -58,8 +58,8 @@ sudo make install
 ## Usage
 There are three ways to control filtering.
 1. Statically, via file databases and configuration file. (see wiki/usage#i_want_to):
-2. Dynamically, via the command line (see wiki/usage#i_want_to)
-3. <s>Dynamically, via the C++ or Python API. (see wiki/usage#api)</s> (Coming soon)
+2. Dynamically, via the command line (see [wiki/how-do-i](https://github.com/rackd/dxdp/wiki/how-do-i))
+3. <s>Dynamically, via the C++ or Python API. (see [wiki/how-do-i](https://github.com/rackd/dxdp/wiki/how-do-i))</s> (Coming soon)
 
 **Note: you must edit the configuration file before starting dxdp:**
 ```c
