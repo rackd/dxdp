@@ -38,6 +38,6 @@ if ! pip show requests > /dev/null 2>&1; then
     echo "dep error - please report."
 fi
 
-echo "Preperation done...starting update"
+echo "Preparation done...starting update"
 python3 $UPDATE_PY_PATH
 rm -r -f "$VENV_DIR"

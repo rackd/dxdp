@@ -128,11 +128,6 @@ if(file_empty):
     print("Cache download file is corrupted. Deleting and downloading db.")
     should_dl_ipv4 = True
     should_dl_ipv6 = True
-
-if(file_empty):
-    print("No cache...downloading dbs")
-    should_dl_ipv4 = True
-    should_dl_ipv6 = True
     
 if(should_dl_ipv4):
     print("Downloading IPV4")

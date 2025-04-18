@@ -2,7 +2,9 @@
 
 ## About
 
-dXDP is a high-performance, low-level kernel application leveraging XDP/eBPF to provide dynamic control over incoming packets on a machine. Filter IP packets by whitelisting or blacklisting IP addresses at the network interface level. Designed for flexibility and efficiency, dXDP incorporates a custom Just-In-Time (JIT) compiler and supports IP geolocation filtering using an easy-to-update database.
+dXDP is a high-performance, low-level kernel application leveraging XDP/eBPF to provide dynamic control over incoming packets on a machine.
+
+dXDP lets you filter  IP packets by whitelisting or blacklisting IP addresses at the network interface level. Designed for flexibility and efficiency, dXDP incorporates a custom Just-In-Time (JIT) compiler and supports IP geolocation filtering using an easy-to-update database.
 
 Common uses for dXDP includes providing a last-resort endpoint security firewall for servers, a robust firewall for servers which cannot use hardware firewalls, or lastly a 
 method to increase security post hardware firewall without adding significant
@@ -61,7 +63,7 @@ There are three ways to control filtering.
 2. Dynamically, via the command line (see [wiki/how-do-i](https://github.com/rackd/dxdp/wiki/how-do-i))
 3. <s>Dynamically, via the C++ or Python API. (see [wiki/how-do-i](https://github.com/rackd/dxdp/wiki/how-do-i))</s> (Coming soon)
 
-**Note: you must edit the configuration file before starting dxdp:**
+**Note: you must edit the configuration file before starting dXDP:**
 ```c
 sudo cp /etc/dxdp/sample.conf /etc/dxdp/dxdp.conf
 vim /etc/dxdp/dxdp.conf
