@@ -57,7 +57,7 @@ sudo make install
 
 ## Usage
 There are three ways to control filtering.
-1. Statically, via file databases and configuration file. (see wiki/usage#i_want_to):
+1. Statically, via file databases and configuration file. (see [wiki/how-do-i](https://github.com/rackd/dxdp/wiki/how-do-i))
 2. Dynamically, via the command line (see [wiki/how-do-i](https://github.com/rackd/dxdp/wiki/how-do-i))
 3. <s>Dynamically, via the C++ or Python API. (see [wiki/how-do-i](https://github.com/rackd/dxdp/wiki/how-do-i))</s> (Coming soon)
 
@@ -75,8 +75,8 @@ vim /etc/dxdp/dxdp.conf
 
 <br/>
 
-## Options.
-dXDP options are handled via enviormental variable. Currently, you change the
+## Options
+Options for dXDP are handled via environmental variable. Currently, you can change the
 following options with the following variables:
 1. **CONFIG_PATH** (path to config)
     - By default dXDP looks for config files at /etc/dxdp/dxdp.conf
