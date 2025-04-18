@@ -35,8 +35,6 @@ public:
 };
 
 bool compile_source(const char* source_code, void* _out_buf, size_t* _bin_size) {
-
-
     std::unique_ptr<clang::CompilerInstance>
         compInst(new clang::CompilerInstance());
     std::shared_ptr<clang::DiagnosticOptions> diagOpts =
@@ -93,7 +91,6 @@ bool compile_source(const char* source_code, void* _out_buf, size_t* _bin_size) 
     clang::SmallString<256> svBuffer;
     compInst->setOutputStream(std::make_unique<llvm::raw_svector_ostream>
         (svBuffer));
-
 
     clang::EmitBCAction action;
     if(!action.BeginSourceFile(*compInst, compInst->getInvocation()
